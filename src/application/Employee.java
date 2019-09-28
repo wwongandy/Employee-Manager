@@ -36,7 +36,10 @@ public class Employee {
 	}
 
 	public void setSocialSecurityNumber(String socialSecurityNumber) {
-		this.socialSecurityNumber = socialSecurityNumber;
+		if (socialSecurityNumber.length() >= 9) {
+			// Should be at-least 9 digits
+			this.socialSecurityNumber = socialSecurityNumber;
+		}
 	}
 	
 	public Date getDateOfBirth() {
@@ -52,7 +55,9 @@ public class Employee {
 	}
 
 	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+		if (firstName.length() > 1) {
+			this.firstName = firstName;
+		}
 	}
 
 	public String getSurname() {
@@ -60,7 +65,9 @@ public class Employee {
 	}
 
 	public void setSurname(String surname) {
-		this.surname = surname;
+		if (firstName.length() > 1) {
+			this.surname = surname;
+		}
 	}
 	
 	public float getSalary() {
@@ -68,7 +75,9 @@ public class Employee {
 	}
 
 	public void setSalary(float salary) {
-		this.salary = salary;
+		if (salary > 0) {
+			this.salary = salary;
+		}
 	}
 	
 	public String getGender() {
@@ -76,7 +85,9 @@ public class Employee {
 	}
 
 	public void setGender(String gender) {
-		this.gender = gender;
+		if (gender == "M" || gender == "F") {
+			this.gender = gender;
+		}
 	}
 
 	public static Employee searchBySurname(String surname, ArrayList<Employee> employees) {
