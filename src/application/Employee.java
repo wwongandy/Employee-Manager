@@ -4,6 +4,82 @@
 
 package application;
 
-public class Employee {
+import java.util.ArrayList;
+import java.util.Date;
 
+public class Employee {
+	
+	private String socialSecurityNumber;
+	private Date dateOfBirth;
+	private String firstName;
+	private String surname;
+	private float salary;
+	private String gender;
+
+	public Employee(
+			String socialSecurityNumber,
+			Date dateOfBirth,
+			String firstName,
+			String surname,
+			float salary,
+			String gender) {
+		this.setSocialSecurityNumber(socialSecurityNumber);
+		this.setDateOfBirth(dateOfBirth);
+		this.setFirstName(firstName);
+		this.setSurname(surname);
+		this.setSalary(salary);
+		this.setGender(gender);
+	};
+	
+	public String getSocialSecurityNumber() {
+		return socialSecurityNumber;
+	}
+
+	public void setSocialSecurityNumber(String socialSecurityNumber) {
+		this.socialSecurityNumber = socialSecurityNumber;
+	}
+	
+	public Date getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(Date dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+	
+	public float getSalary() {
+		return salary;
+	}
+
+	public void setSalary(float salary) {
+		this.salary = salary;
+	}
+	
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public static Employee searchBySurname(String surname, ArrayList<Employee> employees) {
+		return null;
+	}
 }
