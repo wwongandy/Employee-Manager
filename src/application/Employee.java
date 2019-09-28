@@ -91,6 +91,15 @@ public class Employee {
 	}
 
 	public static Employee searchBySurname(String surname, ArrayList<Employee> employees) {
+		int employeeCount = employees.size();
+		for (int i = 0; i < employeeCount; i += 1) {
+			Employee employee = employees.get(i);
+			
+			if (employee.getSurname() == surname) {
+				return employee;
+			};
+		}
+		
 		return null;
 	}
 }
