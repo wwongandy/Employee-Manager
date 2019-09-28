@@ -90,12 +90,14 @@ public class Employee {
 		}
 	}
 
-	public static Employee searchBySurname(String surname, ArrayList<Employee> employees) {
+	public static Employee searchBySurnameOrSSN(String surnameOrSSN, ArrayList<Employee> employees) {
 		int employeeCount = employees.size();
 		for (int i = 0; i < employeeCount; i += 1) {
 			Employee employee = employees.get(i);
 			
-			if (employee.getSurname() == surname) {
+			if (
+					employee.getSurname() == surnameOrSSN ||
+					employee.getSocialSecurityNumber() == surnameOrSSN) {
 				return employee;
 			};
 		}
