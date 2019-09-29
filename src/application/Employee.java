@@ -1,5 +1,6 @@
 /***
  * Class for storing basic Employee data.
+ * Follows the SQL schema specification for an "employees" object, therefore this class provides pre-validation.
  */
 
 package application;
@@ -65,7 +66,7 @@ public class Employee {
 	}
 
 	public void setSurname(String surname) {
-		if (firstName.length() > 1) {
+		if (surname.length() > 1) {
 			this.surname = surname;
 		}
 	}
