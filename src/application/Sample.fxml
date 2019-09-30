@@ -21,7 +21,7 @@
                      <children>
                         <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Employee Details" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
                         <Button layoutX="14.0" layoutY="131.0" mnemonicParsing="false" text="Add Employee" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" />
-                        <Button fx:id="addEmployee" layoutX="24.0" layoutY="141.0" mnemonicParsing="false" text="Add Employee" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" />
+                        <Button fx:id="addEmployee" layoutX="24.0" layoutY="141.0" mnemonicParsing="false" onAction="#addEmployee" text="Add Employee" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" />
                         <TextField fx:id="socialSecurityNumber" layoutX="37.0" layoutY="66.0" prefHeight="26.0" prefWidth="250.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="80.0" />
                         <TextField fx:id="surname" layoutX="100.0" layoutY="181.0" prefHeight="26.0" prefWidth="250.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="180.0" />
                         <TextField fx:id="firstName" layoutX="100.0" layoutY="159.0" prefHeight="26.0" prefWidth="250.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="155.0" />

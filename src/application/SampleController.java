@@ -1,5 +1,7 @@
 package application;
 
+import java.time.LocalDate;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -76,6 +78,16 @@ public class SampleController {
 	}
 	
 	public void addEmployee() {
+		String _socialSecurityNumber = socialSecurityNumber.getText();
+		LocalDate _dateOfBirth = dateOfBirth.getValue();
+		String _firstName = firstName.getText();
+		String _surname = surname.getText();
+		String _salary = salary.getText();
+		String _gender = gender.getValue();
 		
+		System.out.println("SSN: " + _socialSecurityNumber + ", DoB: " + _dateOfBirth + ", Name: " + _firstName + " " + _surname + " (" + _gender + "), Salary: " + _salary);
+		
+		// Clear all text fields after insertion
+		this.clearAddFormFields();
 	}
 }
