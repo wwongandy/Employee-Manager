@@ -18,6 +18,8 @@ public class Employee {
 	private String surname = null;
 	private float salary = 0;
 	private char gender = 'N';
+	
+	private String errorMsg;
 
 	public Employee(
 			String socialSecurityNumber,
@@ -41,6 +43,7 @@ public class Employee {
 	public void setSocialSecurityNumber(String socialSecurityNumber) {
 		// Ensuring the social security number is a 9 digit integer
 		if (socialSecurityNumber.length() < 9) {
+			this.errorMsg = "Social security number must be at-least 9 digits long";
 			return;
 		}
 		
@@ -48,7 +51,7 @@ public class Employee {
 			int newSSN = Integer.parseInt(socialSecurityNumber);
 			this.socialSecurityNumber = newSSN;
 		} catch (Exception e) {
-			
+			this.errorMsg = "Letters should not exist within the social security number"; 
 		}
 	}
 	
@@ -62,7 +65,7 @@ public class Employee {
 			Date newDate = java.sql.Date.valueOf(dateOfBirth);
 			this.dateOfBirth = newDate;
 		} catch (Exception e) {
-			
+			this.errorMsg = "Given date not a valid date";
 		}
 	}
 
@@ -71,7 +74,9 @@ public class Employee {
 	}
 
 	public void setFirstName(String firstName) {
-		if (firstName.length() > 1) {
+		if (firstName.length() < 1) {
+			this.errorMsg = "Given first name must not be an empty string";
+		} else {
 			this.firstName = firstName;
 		}
 	}
@@ -81,7 +86,9 @@ public class Employee {
 	}
 
 	public void setSurname(String surname) {
-		if (surname.length() > 1) {
+		if (surname.length() < 1) {
+			this.errorMsg = "Given surname must not be an empty string";
+		} else {
 			this.surname = surname;
 		}
 	}
@@ -93,6 +100,7 @@ public class Employee {
 	public void setSalary(String salary) {
 		// Ensuring salary is a valid float value
 		if (salary == "") {
+			this.errorMsg = "Given salary must not be an empty value";
 			return;
 		}
 		
@@ -104,7 +112,7 @@ public class Employee {
 			
 			this.salary = newSalary;
 		} catch (Exception e) {
-			
+			this.errorMsg = "Letters should not exist within salary";
 		}
 	}
 	
@@ -116,10 +124,15 @@ public class Employee {
 		// Converting String --> Char
 		char newGender = gender.charAt(0);
 		if (newGender != 'M' && newGender != 'F') {
+			this.errorMsg = "Given gender not a valid value";
 			return;
 		}
 		
 		this.gender = newGender;
+	}
+	
+	public String getErrorMsg() {
+		return errorMsg;
 	}
 	
 	public String toString() {
