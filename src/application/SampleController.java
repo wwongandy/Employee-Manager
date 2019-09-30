@@ -1,5 +1,11 @@
 package application;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+
 public class SampleController {
 	
 	// SQL database connection configuration
@@ -10,6 +16,20 @@ public class SampleController {
 	private final int PORT_NUMBER = 3306;
 	private final String DATABASE_NAME = "test";
 	private final String TABLE_NAME = "employees";
+	
+	@FXML
+	private TextField socialSecurityNumber, firstName, surname, salary;
+	@FXML
+	private DatePicker dateOfBirth;
+	@FXML
+	private ComboBox gender;
+	@FXML
+	private ListView employeeListing;
+	
+	// Initialisation function once JavaFX variables are loaded
+	public void initialize() {
+		
+	}
 	
 	// Employee form buttons handlers
 	public void clearAddFormFields() {
