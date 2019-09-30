@@ -2,7 +2,9 @@ package application;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.Properties;
 
@@ -24,6 +26,7 @@ public class SampleController {
 	private final String DATABASE_NAME = "test";
 	private final String TABLE_NAME = "employees";
 	
+	// SQL connection variable for handling queries and updates
 	private Connection thisConnection;
 	
 	@FXML
@@ -39,6 +42,8 @@ public class SampleController {
 	
 	// Initialisation function once JavaFX variables are loaded
 	public void initialize() {
+		
+		// Connecting to SQL upon initialisation
 		try {
 			thisConnection = this.connectToSQL();
 		} catch (Exception e) {
@@ -46,6 +51,7 @@ public class SampleController {
 			return;
 		}
 		
+		// Adding selectable options for gender dropdown
 		gender.getItems().addAll(
 				"Male",
 				"Female"
@@ -56,6 +62,7 @@ public class SampleController {
 		Connection conn = null;
 		Properties connectionProps = new Properties();
 		
+		// Login credentials for SQL localhost
 		connectionProps.put("user", this.SQL_USERNAME);
 		connectionProps.put("password", this.SQL_PASSWORD);
 		
