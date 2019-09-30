@@ -1,6 +1,10 @@
 package application;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Properties;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -20,6 +24,8 @@ public class SampleController {
 	private final String DATABASE_NAME = "test";
 	private final String TABLE_NAME = "employees";
 	
+	private Connection thisConnection;
+	
 	@FXML
 	private TextField socialSecurityNumber, firstName, surname, salary;
 	@FXML
@@ -33,10 +39,37 @@ public class SampleController {
 	
 	// Initialisation function once JavaFX variables are loaded
 	public void initialize() {
+		try {
+			thisConnection = this.connectToSQL();
+		} catch (Exception e) {
+			thisConnection = null;
+			return;
+		}
+		
 		gender.getItems().addAll(
 				"Male",
 				"Female"
 		);
+	}
+	
+	public Connection connectToSQL() throws SQLException {
+		Connection conn = null;
+		Properties connectionProps = new Properties();
+		
+		connectionProps.put("user", this.SQL_USERNAME);
+		connectionProps.put("password", this.SQL_PASSWORD);
+		
+		try {
+			// Connecting to the SQL database
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://" + this.SERVER_NAME + ":" + this.PORT_NUMBER + "/" + this.DATABASE_NAME + "?serverTimezone=UTC",
+					connectionProps
+			);
+			
+			return conn;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 	// Employee form buttons handlers
