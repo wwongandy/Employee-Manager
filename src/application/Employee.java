@@ -5,24 +5,26 @@
 
 package application;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class Employee {
 	
-	private String socialSecurityNumber;
-	private Date dateOfBirth;
-	private String firstName;
-	private String surname;
-	private float salary;
-	private String gender;
+	// Giving default values to easily check if employee object passes validation
+	private int socialSecurityNumber = 0;
+	private Date dateOfBirth = null;
+	private String firstName = null;
+	private String surname = null;
+	private float salary = 0;
+	private char gender = 'N';
 
 	public Employee(
 			String socialSecurityNumber,
-			Date dateOfBirth,
+			LocalDate dateOfBirth,
 			String firstName,
 			String surname,
-			float salary,
+			String salary,
 			String gender) {
 		this.setSocialSecurityNumber(socialSecurityNumber);
 		this.setDateOfBirth(dateOfBirth);
@@ -32,14 +34,21 @@ public class Employee {
 		this.setGender(gender);
 	};
 	
-	public String getSocialSecurityNumber() {
+	public int getSocialSecurityNumber() {
 		return socialSecurityNumber;
 	}
 
 	public void setSocialSecurityNumber(String socialSecurityNumber) {
-		if (socialSecurityNumber.length() >= 9) {
-			// Should be at-least 9 digits
-			this.socialSecurityNumber = socialSecurityNumber;
+		// Ensuring the social security number is a 9 digit integer
+		if (socialSecurityNumber.length() < 9) {
+			return;
+		}
+		
+		try {
+			int newSSN = Integer.parseInt(socialSecurityNumber);
+			this.socialSecurityNumber = newSSN;
+		} catch (Exception e) {
+			
 		}
 	}
 	
@@ -47,8 +56,14 @@ public class Employee {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(Date dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
+	public void setDateOfBirth(LocalDate dateOfBirth) {
+		try {
+			// Converting LocalDate --> Date
+			Date newDate = java.sql.Date.valueOf(dateOfBirth);
+			this.dateOfBirth = newDate;
+		} catch (Exception e) {
+			
+		}
 	}
 
 	public String getFirstName() {
@@ -75,20 +90,52 @@ public class Employee {
 		return salary;
 	}
 
-	public void setSalary(float salary) {
-		if (salary > 0) {
-			this.salary = salary;
+	public void setSalary(String salary) {
+		// Ensuring salary is a valid float value
+		if (salary == "") {
+			return;
+		}
+		
+		try {
+			float newSalary = Float.parseFloat(salary);
+			if (newSalary == 0) {
+				return;
+			}
+			
+			this.salary = newSalary;
+		} catch (Exception e) {
+			
 		}
 	}
 	
-	public String getGender() {
+	public char getGender() {
 		return gender;
 	}
 
 	public void setGender(String gender) {
-		if (gender == "M" || gender == "F") {
-			this.gender = gender;
+		// Converting String --> Char
+		char newGender = gender.charAt(0);
+		if (newGender != 'M' && newGender != 'F') {
+			return;
 		}
+		
+		this.gender = newGender;
+	}
+	
+	public String toString() {
+		return ("SSN: " + this.socialSecurityNumber + ", DoB: " + this.dateOfBirth + ", name: " + this.firstName + " " + this.surname + " (" + this.gender + "), salary: " + this.salary);
+	}
+	
+	public boolean isInvalid() {
+		// Checks if the employee passes the validation for SQL insertion		
+		return (
+				this.socialSecurityNumber == 0 ||
+				this.dateOfBirth == null ||
+				this.firstName == null ||
+				this.surname == null ||
+				this.salary == 0 ||
+				this.gender == 'N'
+		);
 	}
 
 	public static Employee searchBySurnameOrSSN(String surnameOrSSN, ArrayList<Employee> employees) {
@@ -98,7 +145,7 @@ public class Employee {
 			
 			if (
 					employee.getSurname() == surnameOrSSN ||
-					employee.getSocialSecurityNumber() == surnameOrSSN) {
+					Integer.toString(employee.getSocialSecurityNumber()) == surnameOrSSN) {
 				return employee;
 			};
 		}
