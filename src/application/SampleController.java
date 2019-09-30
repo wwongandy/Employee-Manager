@@ -1,6 +1,7 @@
 package application;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
@@ -22,18 +23,26 @@ public class SampleController {
 	@FXML
 	private DatePicker dateOfBirth;
 	@FXML
-	private ComboBox gender;
+	private ComboBox<String> gender;
+	@FXML
+	private Button addEmployee, clearFields;
 	@FXML
 	private ListView employeeListing;
 	
 	// Initialisation function once JavaFX variables are loaded
 	public void initialize() {
-		
+		gender.getItems().addAll(
+				"Male",
+				"Female"
+		);
 	}
 	
 	// Employee form buttons handlers
 	public void clearAddFormFields() {
-
+		socialSecurityNumber.clear();
+		firstName.clear();
+		surname.clear();
+		salary.clear();
 	}
 	
 	// Employee profile traversal operations
