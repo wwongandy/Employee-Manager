@@ -1,7 +1,9 @@
 package application;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -125,7 +127,43 @@ public class SampleController {
 		String _salary = salary.getText();
 		String _gender = gender.getValue();
 		
-		System.out.println("SSN: " + _socialSecurityNumber + ", DoB: " + _dateOfBirth + ", Name: " + _firstName + " " + _surname + " (" + _gender + "), Salary: " + _salary);
+		Employee newEmployee = new Employee(
+				_socialSecurityNumber,
+				_dateOfBirth,
+				_firstName,
+				_surname,
+				_salary,
+				_gender
+		);
+		
+		if (newEmployee.isInvalid()) {
+			// TODO: Toast message indicating invalid schema using newEmployee.getErrorMsg();
+//			System.out.println(newEmployee.getErrorMsg());
+			return;
+		}
+		
+		try {
+			PreparedStatement stmt = this.thisConnection.prepareStatement(
+					"INSERT INTO `employees` (`socialSecurityNumber`, `dateOfBirth`, `firstName`, `surname`, `salary`, `gender`) " +
+					"VALUES (?, ?, ?, ?, ?, ?)"
+			);
+			
+			stmt.setInt(1, newEmployee.getSocialSecurityNumber());
+			stmt.setDate(2, (Date) newEmployee.getDateOfBirth());
+			stmt.setString(3, newEmployee.getFirstName());
+			stmt.setString(4, newEmployee.getSurname());
+			stmt.setFloat(5, newEmployee.getSalary());
+			stmt.setString(6, String.valueOf(newEmployee.getGender()));
+			
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (Exception e) {
+			// TODO: Toast message indicating invalid insertion
+//			System.out.println(e);
+			return;
+		}
+		
+//		System.out.println("Inserted employee to database");
 		
 		// Clear all text fields after insertion
 		this.clearAddFormFields();

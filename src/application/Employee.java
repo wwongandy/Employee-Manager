@@ -19,6 +19,7 @@ public class Employee {
 	private float salary = 0;
 	private char gender = 'N';
 	
+	// Storing the most recent error message for validation handling
 	private String errorMsg;
 
 	public Employee(
@@ -152,11 +153,13 @@ public class Employee {
 	}
 
 	public static Employee searchBySurnameOrSSN(String surnameOrSSN, ArrayList<Employee> employees) {
+		// Searches for an employee from the given list based on the given surname or SSN
 		int employeeCount = employees.size();
 		for (int i = 0; i < employeeCount; i += 1) {
 			Employee employee = employees.get(i);
 			
 			if (
+					employee.getFirstName() == surnameOrSSN ||
 					employee.getSurname() == surnameOrSSN ||
 					Integer.toString(employee.getSocialSecurityNumber()) == surnameOrSSN) {
 				return employee;
