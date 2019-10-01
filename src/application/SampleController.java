@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import javafx.fxml.FXML;
@@ -30,6 +31,7 @@ public class SampleController {
 	
 	// SQL connection variable for handling queries and updates
 	private Connection thisConnection;
+	private ArrayList<Employee> employeesArr;
 	
 	@FXML
 	private TextField socialSecurityNumber, firstName, surname, salary;
@@ -40,7 +42,7 @@ public class SampleController {
 	@FXML
 	private Button addEmployee, clearFields;
 	@FXML
-	private ListView employeeListing;
+	private ListView<Employee> employeeListing;
 	
 	// Initialisation function once JavaFX variables are loaded
 	public void initialize() {
@@ -108,7 +110,39 @@ public class SampleController {
 	
 	// CRUD - JDBC to SQL Operations;
 	public void getAllEmployees() {
-		
+		try {
+			// Retrieving all employees from the database
+			Statement stmt = this.thisConnection.createStatement();
+			stmt.executeQuery(
+					"SELECT * FROM `employees`"
+			);
+			
+			ResultSet currentEmployee = stmt.getResultSet();
+			ArrayList<Employee> employeesArr = new ArrayList<Employee>();
+			
+			// Converting to ArrayList for quick referencing later
+			while (currentEmployee.next()) {
+				Employee employee = new Employee(
+					currentEmployee.getInt("socialSecurityNumber"),
+					currentEmployee.getDate("dateOfBirth"),
+					currentEmployee.getString("firstName"),
+					currentEmployee.getString("surname"),
+					currentEmployee.getFloat("salary"),
+					currentEmployee.getString("gender")
+				);
+				
+				employeesArr.add(employee);
+			}
+			
+			this.employeesArr = employeesArr;
+			
+			// Updating the employees ListView
+			this.employeeListing.getItems().clear();
+			this.employeeListing.getItems().addAll(employeesArr);
+			
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	public void deleteEmployee() {

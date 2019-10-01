@@ -37,6 +37,21 @@ public class Employee {
 		this.setGender(gender);
 	};
 	
+	public Employee(
+			int socialSecurityNumber,
+			java.sql.Date dateOfBirth,
+			String firstName,
+			String surname,
+			float salary,
+			String gender) {
+		this.setSocialSecurityNumber(socialSecurityNumber);
+		this.setDateOfBirth(dateOfBirth);
+		this.setFirstName(firstName);
+		this.setSurname(surname);
+		this.setSalary(salary);
+		this.setGender(gender);
+	}
+
 	public int getSocialSecurityNumber() {
 		return socialSecurityNumber;
 	}
@@ -56,6 +71,15 @@ public class Employee {
 		}
 	}
 	
+	public void setSocialSecurityNumber(int socialSecurityNumber) {
+		if (socialSecurityNumber < 100000000) {
+			this.errorMsg = "Social security number must be at-least 9 digits long";
+			return;
+		}
+		
+		this.socialSecurityNumber = socialSecurityNumber;
+	}
+	
 	public Date getDateOfBirth() {
 		return dateOfBirth;
 	}
@@ -68,6 +92,10 @@ public class Employee {
 		} catch (Exception e) {
 			this.errorMsg = "Given date not a valid date";
 		}
+	}
+	
+	public void setDateOfBirth(java.sql.Date dateOfBirth) {
+		this.dateOfBirth = new Date(dateOfBirth.getTime());
 	}
 
 	public String getFirstName() {
@@ -108,6 +136,7 @@ public class Employee {
 		try {
 			float newSalary = Float.parseFloat(salary);
 			if (newSalary == 0) {
+				this.errorMsg = "Given salary should not be equal zero";
 				return;
 			}
 			
@@ -115,6 +144,15 @@ public class Employee {
 		} catch (Exception e) {
 			this.errorMsg = "Letters should not exist within salary";
 		}
+	}
+	
+	public void setSalary(float salary) {
+		if (salary == 0) {
+			this.errorMsg = "Given salary should not be equal zero";
+			return;
+		}
+		
+		this.salary = salary;
 	}
 	
 	public char getGender() {
