@@ -1,5 +1,6 @@
 package application;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -10,13 +11,6 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Properties;
-
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 
 public class SampleController {
 	
@@ -33,18 +27,11 @@ public class SampleController {
 	private Connection thisConnection;
 	private ArrayList<Employee> employeesArr;
 	
-	@FXML
-	private TextField socialSecurityNumber, firstName, surname, salary;
-	@FXML
-	private DatePicker dateOfBirth;
-	@FXML
-	private ComboBox<String> gender;
-	@FXML
-	private Button addEmployee, clearFields;
-	@FXML
-	private ListView<Employee> employeeListing;
+	public static void main(String[] args) {
+		
+	}
 	
-	// Initialisation function once JavaFX variables are loaded
+	// Initialisation function once the program starts
 	public void initialize() {
 		
 		// Connecting to SQL upon initialisation
@@ -54,12 +41,6 @@ public class SampleController {
 			thisConnection = null;
 			return;
 		}
-		
-		// Adding selectable options for gender dropdown
-		gender.getItems().addAll(
-				"Male",
-				"Female"
-		);
 	}
 	
 	public Connection connectToSQL() throws SQLException {
@@ -85,10 +66,7 @@ public class SampleController {
 	
 	// Employee form buttons handlers
 	public void clearAddFormFields() {
-		socialSecurityNumber.clear();
-		firstName.clear();
-		surname.clear();
-		salary.clear();
+		
 	}
 	
 	// Employee profile traversal operations
@@ -136,9 +114,7 @@ public class SampleController {
 			
 			this.employeesArr = employeesArr;
 			
-			// Updating the employees ListView
-			this.employeeListing.getItems().clear();
-			this.employeeListing.getItems().addAll(employeesArr);
+			// TODO Updating the employees ListView
 			
 		} catch (Exception e) {
 			
@@ -154,6 +130,7 @@ public class SampleController {
 	}
 	
 	public void addEmployee() {
+		/*
 		String _socialSecurityNumber = socialSecurityNumber.getText();
 		LocalDate _dateOfBirth = dateOfBirth.getValue();
 		String _firstName = firstName.getText();
@@ -201,5 +178,6 @@ public class SampleController {
 		
 		// Clear all text fields after insertion
 		this.clearAddFormFields();
+		*/
 	}
 }
