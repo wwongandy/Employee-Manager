@@ -22,6 +22,16 @@ public class Employee {
 	// Storing the most recent error message for validation handling
 	private String errorMsg;
 
+	/**
+	 * Default constructor to ensure given employee details passes validation.
+	 * 
+	 * @param socialSecurityNumber
+	 * @param dateOfBirth
+	 * @param firstName
+	 * @param surname
+	 * @param salary
+	 * @param gender
+	 */
 	public Employee(
 			String socialSecurityNumber,
 			LocalDate dateOfBirth,
@@ -29,6 +39,7 @@ public class Employee {
 			String surname,
 			String salary,
 			String gender) {
+		
 		this.setSocialSecurityNumber(socialSecurityNumber);
 		this.setDateOfBirth(dateOfBirth);
 		this.setFirstName(firstName);
@@ -37,6 +48,16 @@ public class Employee {
 		this.setGender(gender);
 	};
 	
+	/**
+	 * Constructor to store employee results from the SQL database queries as an object.
+	 * 
+	 * @param socialSecurityNumber
+	 * @param dateOfBirth
+	 * @param firstName
+	 * @param surname
+	 * @param salary
+	 * @param gender
+	 */
 	public Employee(
 			int socialSecurityNumber,
 			java.sql.Date dateOfBirth,
@@ -52,12 +73,21 @@ public class Employee {
 		this.setGender(gender);
 	}
 
+	/**
+	 * @return
+	 */
 	public int getSocialSecurityNumber() {
 		return socialSecurityNumber;
 	}
 
+	/**
+	 * Default setter for socialSecurityNumber.
+	 * Ensures that the given social security number is a 9-digit or more integer.
+	 * 
+	 * @param socialSecurityNumber
+	 */
 	public void setSocialSecurityNumber(String socialSecurityNumber) {
-		// Ensuring the social security number is a 9 digit integer
+		
 		if (socialSecurityNumber.length() < 9) {
 			this.errorMsg = "Social security number must be at-least 9 digits long";
 			return;
@@ -71,7 +101,14 @@ public class Employee {
 		}
 	}
 	
+	/**
+	 * Setter for socialSecurityNumber.
+	 * Ensures that the given social security number is a 9-digit or more integer.
+	 * 
+	 * @param socialSecurityNumber
+	 */
 	public void setSocialSecurityNumber(int socialSecurityNumber) {
+		
 		if (socialSecurityNumber < 100000000) {
 			this.errorMsg = "Social security number must be at-least 9 digits long";
 			return;
@@ -79,14 +116,24 @@ public class Employee {
 		
 		this.socialSecurityNumber = socialSecurityNumber;
 	}
-	
+	/**
+	 * Unused.
+	 * 
+	 * @return
+	 */
 	public Date getDateOfBirth() {
 		return dateOfBirth;
 	}
 
+	/**
+	 * Default setter for dateOfBirth.
+	 * Ensures the given date can be converted into a "Date" object.
+	 * 
+	 * @param dateOfBirth
+	 */
 	public void setDateOfBirth(LocalDate dateOfBirth) {
+		
 		try {
-			// Converting LocalDate --> Date
 			Date newDate = java.sql.Date.valueOf(dateOfBirth);
 			this.dateOfBirth = newDate;
 		} catch (Exception e) {
@@ -94,15 +141,31 @@ public class Employee {
 		}
 	}
 	
+	/**
+	 * Setter for dateOfBirth.
+	 * Ensures the given date can be converted into a "Date" object.
+	 * 
+	 * @param dateOfBirth
+	 */
 	public void setDateOfBirth(java.sql.Date dateOfBirth) {
 		this.dateOfBirth = new Date(dateOfBirth.getTime());
 	}
 
+	/**
+	 * @return
+	 */
 	public String getFirstName() {
 		return firstName;
 	}
 
+	/**
+	 * Default setter for firstName.
+	 * Ensures the given first name is not an empty string.
+	 * 
+	 * @param firstName
+	 */
 	public void setFirstName(String firstName) {
+		
 		if (firstName.length() < 1) {
 			this.errorMsg = "Given first name must not be an empty string";
 		} else {
@@ -110,11 +173,20 @@ public class Employee {
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	public String getSurname() {
 		return surname;
 	}
 
+	/**
+	 * Default setter for surname.
+	 * Ensures the given surname is not an empty string.
+	 * @param surname
+	 */
 	public void setSurname(String surname) {
+		
 		if (surname.length() < 1) {
 			this.errorMsg = "Given surname must not be an empty string";
 		} else {
@@ -122,12 +194,23 @@ public class Employee {
 		}
 	}
 	
+	/**
+	 * Unused.
+	 * 
+	 * @return
+	 */
 	public float getSalary() {
 		return salary;
 	}
 
+	/**
+	 * Default setter for salary.
+	 * Converts the given salary into a string, and is not 0.
+	 * 
+	 * @param salary
+	 */
 	public void setSalary(String salary) {
-		// Ensuring salary is a valid float value
+		
 		if (salary == "") {
 			this.errorMsg = "Given salary must not be an empty value";
 			return;
@@ -146,7 +229,14 @@ public class Employee {
 		}
 	}
 	
+	/**
+	 * Setter for salary.
+	 * Ensures the given salary is not 0.
+	 * 
+	 * @param salary
+	 */
 	public void setSalary(float salary) {
+		
 		if (salary == 0) {
 			this.errorMsg = "Given salary should not be equal zero";
 			return;
@@ -155,12 +245,23 @@ public class Employee {
 		this.salary = salary;
 	}
 	
+	/**
+	 * Unused.
+	 * 
+	 * @return
+	 */
 	public char getGender() {
 		return gender;
 	}
 
+	/**
+	 * Setter for gender.
+	 * Converts the given gender into a "char" value.
+	 * 
+	 * @param gender
+	 */
 	public void setGender(String gender) {
-		// Converting String --> Char
+		
 		char newGender = gender.charAt(0);
 		if (newGender != 'M' && newGender != 'F') {
 			this.errorMsg = "Given gender not a valid value";
@@ -170,16 +271,31 @@ public class Employee {
 		this.gender = newGender;
 	}
 	
+	/**
+	 * Returns the most recent error message, if there are validation errors.
+	 * 
+	 * @return
+	 */
 	public String getErrorMsg() {
 		return errorMsg;
 	}
 	
+	/**
+	 * Compiles and returns a string value of the employee's details.
+	 * 
+	 * @return
+	 */
 	public String toString() {
 		return ("SSN: " + this.socialSecurityNumber + ", DoB: " + this.dateOfBirth + ", name: " + this.firstName + " " + this.surname + " (" + this.gender + "), salary: " + this.salary);
 	}
 	
+	/**
+	 * Checks if the employee details does not meet the validation requirements for the SQL database schema.
+	 * 
+	 * @return
+	 */
 	public boolean isInvalid() {
-		// Checks if the employee passes the validation for SQL insertion		
+		
 		return (
 				this.socialSecurityNumber == 0 ||
 				this.dateOfBirth == null ||
@@ -190,8 +306,20 @@ public class Employee {
 		);
 	}
 
+	/**
+	 * Searches the array list of employees for any matching;
+	 * 	- first name
+	 * 	- surname
+	 * 	- social security numbers
+	 * 
+	 * and returns the first one it finds.
+	 * 
+	 * @param surnameOrSSN
+	 * @param employees
+	 * @return
+	 */
 	public static Employee searchBySurnameOrSSN(String surnameOrSSN, ArrayList<Employee> employees) {
-		// Searches for an employee from the given list based on the given surname or SSN
+		
 		int employeeCount = employees.size();
 		for (int i = 0; i < employeeCount; i += 1) {
 			Employee employee = employees.get(i);
