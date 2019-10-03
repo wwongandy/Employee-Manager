@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Properties;
 
-public class SampleController {
+public class Main {
 	
 	// SQL database connection configuration
 	// Technically a security flaw, but thankfully our database is in localhost!
