@@ -29,6 +29,9 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
+		// Start the Swing application
+		Main app = new Main();
+		app.initialize();
 	}
 	
 	// Initialisation function once the program starts
