@@ -14,8 +14,7 @@ import java.util.Properties;
 
 public class Main {
 	
-	// SQL database connection configuration
-	// Technically a security flaw, but thankfully our database is in localhost!
+	// SQL database connection configuration, localhost so it's not a security flaw! Totally.
 	private final String SQL_USERNAME = "root";
 	private final String SQL_PASSWORD = "root";
 	private final String SERVER_NAME = "localhost";
@@ -27,26 +26,47 @@ public class Main {
 	private Connection thisConnection;
 	private ArrayList<Employee> employeesArr;
 	
+	/**
+	 * Main function to initialise the Swing application.
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		
-		// Start the Swing application
 		Main app = new Main();
 		app.initialize();
 	}
 	
-	// Initialisation function once the program starts
+	/**
+	 * Initialisation function to setup Swing components and connection to SQL.
+	 */
 	public void initialize() {
 		
-		// Connecting to SQL upon initialisation
 		try {
 			thisConnection = this.connectToSQL();
 		} catch (Exception e) {
 			thisConnection = null;
 			return;
 		}
+		
+		this.setupSwingComponents();
 	}
 	
+	/**
+	 * Builds the Swing GUI and its associated event listeners.
+	 */
+	public void setupSwingComponents() {
+		
+	}
+	
+	/**
+	 * Makes a connection to the local SQL database using JDBC.
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
 	public Connection connectToSQL() throws SQLException {
+		
 		Connection conn = null;
 		Properties connectionProps = new Properties();
 		
@@ -67,32 +87,27 @@ public class Main {
 		}
 	}
 	
-	// Employee form buttons handlers
+	/**
+	 * Empties all text fields from the GUI.
+	 */
 	public void clearAddFormFields() {
 		
 	}
 	
-	// Employee profile traversal operations
-	public void viewEmployee() {
-		
-	}
-	
-	public void viewNextEmployee() {
-		
-	}
-	
-	public void viewPreviousEmployee() {
-		
-	}
-	
+	/**
+	 * Searches for an employee from the loaded array list of employees.
+	 * Instead of constantly querying from the SQL database, this will be more efficient and give less load on the database.
+	 */
 	public void searchEmployee() {
 		
 	}
 	
-	// CRUD - JDBC to SQL Operations;
+	/**
+	 * Retrieves all employees from the database and stores it into an array list.
+	 */
 	public void getAllEmployees() {
+		
 		try {
-			// Retrieving all employees from the database
 			Statement stmt = this.thisConnection.createStatement();
 			stmt.executeQuery(
 					"SELECT * FROM `employees`"
@@ -117,21 +132,28 @@ public class Main {
 			
 			this.employeesArr = employeesArr;
 			
-			// TODO Updating the employees ListView
-			
 		} catch (Exception e) {
 			
 		}
 	}
 	
+	/**
+	 * Removes the selected employee in the GUI from the database.
+	 */
 	public void deleteEmployee() {
 		
 	}
 	
+	/**
+	 * Updates the selected employee in the GUI and replaces his existing details with the new given details in the database.
+	 */
 	public void updateEmployee() {
 		
 	}
 	
+	/**
+	 * Adds an employee to the database with the given details from the GUI, uses Employee class to perform pre-validation before sending it to SQL.
+	 */
 	public void addEmployee() {
 		/*
 		String _socialSecurityNumber = socialSecurityNumber.getText();
