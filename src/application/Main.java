@@ -165,6 +165,7 @@ public class Main extends JFrame {
 		button.setBounds(296, 177, 135, 21);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				clearAddFormFields();
 			}
 		});
 		contentPane.add(button);
@@ -258,7 +259,11 @@ public class Main extends JFrame {
 	 * Empties all text fields from the GUI.
 	 */
 	public void clearAddFormFields() {
-		
+		socialSecurityNumber.setText("");
+		dateOfBirth.setText("");
+		firstName.setText("");
+		surname.setText("");
+		salary.setText("");
 	}
 	
 	/**

@@ -271,7 +271,7 @@ public class Employee {
 	public void setGender(String gender) {
 		
 		char newGender = gender.charAt(0);
-		if (newGender != 'M' && newGender != 'F') {
+		if (newGender != 'M' && newGender != 'F' && newGender != 'O') {
 			this.errorMsg = "Given gender not a valid value";
 			return;
 		}
