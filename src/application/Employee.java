@@ -320,26 +320,26 @@ public class Employee {
 	 * 	- surname
 	 * 	- social security numbers
 	 * 
-	 * and returns the first one it finds.
+	 * and returns the index of the first one it finds.
 	 * 
 	 * @param surnameOrSSN
 	 * @param employees
 	 * @return
 	 */
-	public static Employee searchBySurnameOrSSN(String surnameOrSSN, ArrayList<Employee> employees) {
+	public static int searchBySurnameOrSSN(String surnameOrSSN, ArrayList<Employee> employees) {
 		
 		int employeeCount = employees.size();
 		for (int i = 0; i < employeeCount; i += 1) {
 			Employee employee = employees.get(i);
 			
 			if (
-					employee.getFirstName() == surnameOrSSN ||
-					employee.getSurname() == surnameOrSSN ||
-					Integer.toString(employee.getSocialSecurityNumber()) == surnameOrSSN) {
-				return employee;
+					employee.getFirstName().equals(surnameOrSSN) ||
+					employee.getSurname().equals(surnameOrSSN) ||
+					Integer.toString(employee.getSocialSecurityNumber()).equals(surnameOrSSN)) {
+				return i;
 			};
 		}
 		
-		return null;
+		return -1;
 	}
 }

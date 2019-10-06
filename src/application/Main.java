@@ -38,8 +38,9 @@ public class Main extends JFrame {
 	
 	// SQL connection variable for handling queries and updates
 	private Connection thisConnection;
-	private ArrayList<Employee> employeesArr;
 	
+	private ArrayList<Employee> employeesArr = new ArrayList<Employee>();
+	private int currentEmployeeDisplayed = -1; // index to current employee being displayed, for usage in Next/Previous buttons
 	String[] GENDER_OPTIONS = {"Male", "Female", "Other"};
 
 	// Swing GUI components
@@ -179,6 +180,11 @@ public class Main extends JFrame {
 		contentPane.add(horizontalStrut);
 		
 		JButton btnSearchEmployee = new JButton("Search Employee");
+		btnSearchEmployee.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				searchEmployee();
+			}
+		});
 		btnSearchEmployee.setBounds(5, 213, 171, 21);
 		contentPane.add(btnSearchEmployee);
 		
@@ -271,7 +277,23 @@ public class Main extends JFrame {
 	 * Instead of constantly querying from the SQL database, this will be more efficient and give less load on the database.
 	 */
 	public void searchEmployee() {
+		if (this.employeesArr.size() < 1) {
+			this.getAllEmployees();
+		}
 		
+		String surnameOrSSN = searchEmployeeText.getText();
+		int found = Employee.searchBySurnameOrSSN(
+				surnameOrSSN,
+				this.employeesArr
+		);
+		
+		if (found == -1) {
+			outputDataBox.setText("No employee with associated SSN or surname found.");
+			return;
+		}
+		
+		outputDataBox.setText(employeesArr.get(found).toString());
+		this.currentEmployeeDisplayed = found;
 	}
 	
 	/**
