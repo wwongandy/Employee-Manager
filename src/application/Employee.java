@@ -5,11 +5,13 @@
 
 package application;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class Employee {
+	
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 	
 	// Giving default values to easily check if employee object passes validation
 	private int socialSecurityNumber = 0;
@@ -26,7 +28,7 @@ public class Employee {
 	 * Default constructor to ensure given employee details passes validation.
 	 * 
 	 * @param socialSecurityNumber
-	 * @param dateOfBirth
+	 * @param _dateOfBirth
 	 * @param firstName
 	 * @param surname
 	 * @param salary
@@ -34,14 +36,14 @@ public class Employee {
 	 */
 	public Employee(
 			String socialSecurityNumber,
-			LocalDate dateOfBirth,
+			String _dateOfBirth,
 			String firstName,
 			String surname,
 			String salary,
 			String gender) {
 		
 		this.setSocialSecurityNumber(socialSecurityNumber);
-		this.setDateOfBirth(dateOfBirth);
+		this.setDateOfBirth(_dateOfBirth);
 		this.setFirstName(firstName);
 		this.setSurname(surname);
 		this.setSalary(salary);
@@ -131,10 +133,16 @@ public class Employee {
 	 * 
 	 * @param dateOfBirth
 	 */
-	public void setDateOfBirth(LocalDate dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
+		
+		if (dateOfBirth.length() < 10) {
+			this.errorMsg = "Given date must follow the YYYY-MM-DD format";
+			return;
+		}
 		
 		try {
-			Date newDate = java.sql.Date.valueOf(dateOfBirth);
+			Date newDate = dateFormatter.parse(dateOfBirth);
+			
 			this.dateOfBirth = newDate;
 		} catch (Exception e) {
 			this.errorMsg = "Given date not a valid date";

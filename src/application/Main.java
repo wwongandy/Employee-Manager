@@ -8,28 +8,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Properties;
 
 // Imports for AWT & Swing GUI
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.GridBagLayout;
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
 import javax.swing.JTextField;
-import java.awt.Insets;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Component;
 import javax.swing.Box;
-import javax.swing.JFormattedTextField;
 import javax.swing.JEditorPane;
 
 public class Main extends JFrame {
@@ -45,15 +39,19 @@ public class Main extends JFrame {
 	// SQL connection variable for handling queries and updates
 	private Connection thisConnection;
 	private ArrayList<Employee> employeesArr;
+	
+	String[] GENDER_OPTIONS = {"Male", "Female", "Other"};
 
 	// Swing GUI components
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
+	private JTextField socialSecurityNumber;
+	private JTextField dateOfBirth;
+	private JTextField firstName;
+	private JTextField surname;
+	private JTextField salary;
+	private JComboBox<String> gender;
+	private JTextField searchEmployeeText;
+	private JEditorPane outputDataBox;
 
 	/**
 	 * Launch the application.
@@ -100,62 +98,66 @@ public class Main extends JFrame {
 		lblSsn.setBounds(41, 5, 70, 13);
 		contentPane.add(lblSsn);
 		
-		textField = new JTextField();
-		textField.setBounds(121, 5, 310, 19);
-		textField.setToolTipText("Social security number, 9+ digit numbers only");
-		contentPane.add(textField);
-		textField.setColumns(10);
+		socialSecurityNumber = new JTextField();
+		socialSecurityNumber.setBounds(121, 5, 310, 19);
+		socialSecurityNumber.setToolTipText("Social security number, 9+ digit numbers only");
+		contentPane.add(socialSecurityNumber);
+		socialSecurityNumber.setColumns(10);
 		
 		JLabel label = new JLabel("DoB");
 		label.setBounds(40, 29, 71, 13);
 		contentPane.add(label);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(121, 29, 310, 19);
-		textField_1.setToolTipText("Date of birth, YYYY-MM-DD formats only");
-		textField_1.setColumns(10);
-		contentPane.add(textField_1);
+		dateOfBirth = new JTextField();
+		dateOfBirth.setBounds(121, 29, 310, 19);
+		dateOfBirth.setToolTipText("Date of birth, YYYY-MM-DD formats only");
+		dateOfBirth.setColumns(10);
+		contentPane.add(dateOfBirth);
 		
 		JLabel label_1 = new JLabel("First name");
 		label_1.setBounds(10, 53, 101, 13);
 		contentPane.add(label_1);
 		
-		textField_2 = new JTextField();
-		textField_2.setBounds(121, 53, 310, 19);
-		textField_2.setToolTipText("First name");
-		textField_2.setColumns(10);
-		contentPane.add(textField_2);
+		firstName = new JTextField();
+		firstName.setBounds(121, 53, 310, 19);
+		firstName.setToolTipText("First name");
+		firstName.setColumns(10);
+		contentPane.add(firstName);
 		
 		JLabel label_2 = new JLabel("Surname");
 		label_2.setBounds(18, 77, 93, 13);
 		contentPane.add(label_2);
 		
-		textField_3 = new JTextField();
-		textField_3.setBounds(121, 77, 310, 19);
-		textField_3.setToolTipText("Surname");
-		textField_3.setColumns(10);
-		contentPane.add(textField_3);
+		surname = new JTextField();
+		surname.setBounds(121, 77, 310, 19);
+		surname.setToolTipText("Surname");
+		surname.setColumns(10);
+		contentPane.add(surname);
 		
 		JLabel label_3 = new JLabel("Salary");
 		label_3.setBounds(31, 101, 80, 13);
 		contentPane.add(label_3);
 		
-		textField_4 = new JTextField();
-		textField_4.setBounds(121, 101, 310, 19);
-		textField_4.setToolTipText("Salary, please use digits only");
-		textField_4.setColumns(10);
-		contentPane.add(textField_4);
+		salary = new JTextField();
+		salary.setBounds(121, 101, 310, 19);
+		salary.setToolTipText("Salary, digits only");
+		salary.setColumns(10);
+		contentPane.add(salary);
 		
 		JLabel label_4 = new JLabel("Gender");
 		label_4.setBounds(25, 126, 86, 13);
 		contentPane.add(label_4);
 		
-		String[] comboBoxOptions = {"Male", "Female", "Other"};
-		JComboBox<String> comboBox = new JComboBox<String>(comboBoxOptions);
-		comboBox.setBounds(121, 125, 310, 21);
-		contentPane.add(comboBox);
+		gender = new JComboBox<String>(GENDER_OPTIONS);
+		gender.setBounds(121, 125, 310, 21);
+		contentPane.add(gender);
 		
 		JButton btnAdd = new JButton("Add Employee");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				addEmployee();
+			}
+		});
 		btnAdd.setBounds(296, 151, 135, 21);
 		contentPane.add(btnAdd);
 		
@@ -179,17 +181,17 @@ public class Main extends JFrame {
 		btnSearchEmployee.setBounds(5, 213, 171, 21);
 		contentPane.add(btnSearchEmployee);
 		
-		textField_5 = new JTextField();
-		textField_5.setBounds(186, 214, 245, 19);
-		textField_5.setToolTipText("Surname or SSN");
-		contentPane.add(textField_5);
-		textField_5.setColumns(10);
+		searchEmployeeText = new JTextField();
+		searchEmployeeText.setBounds(186, 214, 245, 19);
+		searchEmployeeText.setToolTipText("Surname or SSN");
+		contentPane.add(searchEmployeeText);
+		searchEmployeeText.setColumns(10);
 		
-		JEditorPane dtrpnNoEmployeeWith = new JEditorPane();
-		dtrpnNoEmployeeWith.setBounds(186, 239, 245, 169);
-		dtrpnNoEmployeeWith.setText("No employee with associated SSN or surname found.");
-		dtrpnNoEmployeeWith.setEditable(false);
-		contentPane.add(dtrpnNoEmployeeWith);
+		outputDataBox = new JEditorPane();
+		outputDataBox.setBounds(186, 239, 245, 169);
+		outputDataBox.setText("No employee with associated SSN or surname found.");
+		outputDataBox.setEditable(false);
+		contentPane.add(outputDataBox);
 		
 		JButton button_1 = new JButton("Next");
 		button_1.addActionListener(new ActionListener() {
@@ -200,14 +202,26 @@ public class Main extends JFrame {
 		contentPane.add(button_1);
 		
 		JButton button_2 = new JButton("Previous");
+		button_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		button_2.setBounds(91, 240, 85, 21);
 		contentPane.add(button_2);
 		
 		JButton btnUpdate = new JButton("Update");
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnUpdate.setBounds(5, 271, 80, 21);
 		contentPane.add(btnUpdate);
 		
 		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnDelete.setBounds(91, 271, 85, 21);
 		contentPane.add(btnDelete);
 	}
@@ -308,13 +322,12 @@ public class Main extends JFrame {
 	 * Adds an employee to the database with the given details from the GUI, uses Employee class to perform pre-validation before sending it to SQL.
 	 */
 	public void addEmployee() {
-		/*
 		String _socialSecurityNumber = socialSecurityNumber.getText();
-		LocalDate _dateOfBirth = dateOfBirth.getValue();
+		String _dateOfBirth = dateOfBirth.getText();
 		String _firstName = firstName.getText();
 		String _surname = surname.getText();
 		String _salary = salary.getText();
-		String _gender = gender.getValue();
+		String _gender = GENDER_OPTIONS[gender.getSelectedIndex()];
 		
 		Employee newEmployee = new Employee(
 				_socialSecurityNumber,
@@ -326,8 +339,7 @@ public class Main extends JFrame {
 		);
 		
 		if (newEmployee.isInvalid()) {
-			// TODO: Toast message indicating invalid schema using newEmployee.getErrorMsg();
-//			System.out.println(newEmployee.getErrorMsg());
+			outputDataBox.setText(newEmployee.getErrorMsg());
 			return;
 		}
 		
@@ -347,15 +359,13 @@ public class Main extends JFrame {
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (Exception e) {
-			// TODO: Toast message indicating invalid insertion
-//			System.out.println(e);
+			outputDataBox.setText("An error occurred while attempting to add the employee.");
 			return;
 		}
 		
-//		System.out.println("Inserted employee to database");
+		outputDataBox.setText(newEmployee.toString());
 		
 		// Clear all text fields after insertion
 		this.clearAddFormFields();
-		*/
 	}
 }
