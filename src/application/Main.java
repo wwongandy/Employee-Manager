@@ -1,6 +1,6 @@
 package application;
 
-import javax.swing.*;
+// JDBC and validation imports
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -12,11 +12,31 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Properties;
 
-public class Main {
+// Imports for AWT & Swing GUI
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.awt.GridBagLayout;
+import javax.swing.JLabel;
+import java.awt.GridBagConstraints;
+import javax.swing.JTextField;
+import java.awt.Insets;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.Component;
+import javax.swing.Box;
+import javax.swing.JFormattedTextField;
+import javax.swing.JEditorPane;
+
+public class Main extends JFrame {
 	
-	// SQL database connection configuration, localhost so it's not a security flaw! Totally.
+	// SQL DB connection configuration, localhost so it's not a security flaw! Totally.
 	private final String SQL_USERNAME = "root";
-	private final String SQL_PASSWORD = "root";
+	private final String SQL_PASSWORD = "";
 	private final String SERVER_NAME = "localhost";
 	private final int PORT_NUMBER = 3306;
 	private final String DATABASE_NAME = "test";
@@ -25,38 +45,171 @@ public class Main {
 	// SQL connection variable for handling queries and updates
 	private Connection thisConnection;
 	private ArrayList<Employee> employeesArr;
-	
+
+	// Swing GUI components
+	private JPanel contentPane;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private JTextField textField_3;
+	private JTextField textField_4;
+	private JTextField textField_5;
+
 	/**
-	 * Main function to initialise the Swing application.
-	 * 
-	 * @param args
+	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		
-		Main app = new Main();
-		app.initialize();
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Main frame = new Main();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
-	
+
 	/**
-	 * Initialisation function to setup Swing components and connection to SQL.
+	 * Initialises the GUI and the connection to the SQL database.
 	 */
-	public void initialize() {
+	public Main() {
+		this.makeGUI();
 		
 		try {
-			thisConnection = this.connectToSQL();
+			this.thisConnection = this.connectToSQL();
 		} catch (Exception e) {
-			thisConnection = null;
-			return;
 		}
-		
-		this.setupSwingComponents();
 	}
 	
 	/**
-	 * Builds the Swing GUI and its associated event listeners.
+	 * Creates the GUI frame.
 	 */
-	public void setupSwingComponents() {
+	public void makeGUI() {
 		
+		// Auto-generated code from Eclipse WindowBuilder to setup the AWT & Swing GUI
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 450);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblSsn = new JLabel("SSN");
+		lblSsn.setBounds(41, 5, 70, 13);
+		contentPane.add(lblSsn);
+		
+		textField = new JTextField();
+		textField.setBounds(121, 5, 310, 19);
+		textField.setToolTipText("Social security number, 9+ digit numbers only");
+		contentPane.add(textField);
+		textField.setColumns(10);
+		
+		JLabel label = new JLabel("DoB");
+		label.setBounds(40, 29, 71, 13);
+		contentPane.add(label);
+		
+		textField_1 = new JTextField();
+		textField_1.setBounds(121, 29, 310, 19);
+		textField_1.setToolTipText("Date of birth, YYYY-MM-DD formats only");
+		textField_1.setColumns(10);
+		contentPane.add(textField_1);
+		
+		JLabel label_1 = new JLabel("First name");
+		label_1.setBounds(10, 53, 101, 13);
+		contentPane.add(label_1);
+		
+		textField_2 = new JTextField();
+		textField_2.setBounds(121, 53, 310, 19);
+		textField_2.setToolTipText("First name");
+		textField_2.setColumns(10);
+		contentPane.add(textField_2);
+		
+		JLabel label_2 = new JLabel("Surname");
+		label_2.setBounds(18, 77, 93, 13);
+		contentPane.add(label_2);
+		
+		textField_3 = new JTextField();
+		textField_3.setBounds(121, 77, 310, 19);
+		textField_3.setToolTipText("Surname");
+		textField_3.setColumns(10);
+		contentPane.add(textField_3);
+		
+		JLabel label_3 = new JLabel("Salary");
+		label_3.setBounds(31, 101, 80, 13);
+		contentPane.add(label_3);
+		
+		textField_4 = new JTextField();
+		textField_4.setBounds(121, 101, 310, 19);
+		textField_4.setToolTipText("Salary, please use digits only");
+		textField_4.setColumns(10);
+		contentPane.add(textField_4);
+		
+		JLabel label_4 = new JLabel("Gender");
+		label_4.setBounds(25, 126, 86, 13);
+		contentPane.add(label_4);
+		
+		String[] comboBoxOptions = {"Male", "Female", "Other"};
+		JComboBox<String> comboBox = new JComboBox<String>(comboBoxOptions);
+		comboBox.setBounds(121, 125, 310, 21);
+		contentPane.add(comboBox);
+		
+		JButton btnAdd = new JButton("Add Employee");
+		btnAdd.setBounds(296, 151, 135, 21);
+		contentPane.add(btnAdd);
+		
+		JButton button = new JButton("Clear Fields");
+		button.setBounds(296, 177, 135, 21);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		contentPane.add(button);
+		
+		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
+		horizontalStrut_1.setBounds(0, 0, 0, 0);
+		contentPane.add(horizontalStrut_1);
+		
+		Component horizontalStrut = Box.createHorizontalStrut(20);
+		horizontalStrut.setBounds(0, 0, 0, 0);
+		contentPane.add(horizontalStrut);
+		
+		JButton btnSearchEmployee = new JButton("Search Employee");
+		btnSearchEmployee.setBounds(5, 213, 171, 21);
+		contentPane.add(btnSearchEmployee);
+		
+		textField_5 = new JTextField();
+		textField_5.setBounds(186, 214, 245, 19);
+		textField_5.setToolTipText("Surname or SSN");
+		contentPane.add(textField_5);
+		textField_5.setColumns(10);
+		
+		JEditorPane dtrpnNoEmployeeWith = new JEditorPane();
+		dtrpnNoEmployeeWith.setBounds(186, 239, 245, 169);
+		dtrpnNoEmployeeWith.setText("No employee with associated SSN or surname found.");
+		dtrpnNoEmployeeWith.setEditable(false);
+		contentPane.add(dtrpnNoEmployeeWith);
+		
+		JButton button_1 = new JButton("Next");
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		button_1.setBounds(5, 240, 80, 21);
+		contentPane.add(button_1);
+		
+		JButton button_2 = new JButton("Previous");
+		button_2.setBounds(91, 240, 85, 21);
+		contentPane.add(button_2);
+		
+		JButton btnUpdate = new JButton("Update");
+		btnUpdate.setBounds(5, 271, 80, 21);
+		contentPane.add(btnUpdate);
+		
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.setBounds(91, 271, 85, 21);
+		contentPane.add(btnDelete);
 	}
 	
 	/**
@@ -70,7 +223,7 @@ public class Main {
 		Connection conn = null;
 		Properties connectionProps = new Properties();
 		
-		// Login credentials for SQL localhost
+		// Login credentials for SQL localhost database
 		connectionProps.put("user", this.SQL_USERNAME);
 		connectionProps.put("password", this.SQL_PASSWORD);
 		
