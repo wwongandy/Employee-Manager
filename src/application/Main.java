@@ -203,6 +203,7 @@ public class Main extends JFrame {
 		JButton button_1 = new JButton("Next");
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				getNextEmployee();
 			}
 		});
 		button_1.setBounds(5, 240, 80, 21);
@@ -211,6 +212,7 @@ public class Main extends JFrame {
 		JButton button_2 = new JButton("Previous");
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				getPreviousEmployee();
 			}
 		});
 		button_2.setBounds(91, 240, 85, 21);
@@ -281,6 +283,11 @@ public class Main extends JFrame {
 			this.getAllEmployees();
 		}
 		
+		if (this.employeesArr.size() <= 0) {
+			outputDataBox.setText("No employees found from the database.");
+			return;
+		}
+		
 		String surnameOrSSN = searchEmployeeText.getText();
 		int found = Employee.searchBySurnameOrSSN(
 				surnameOrSSN,
@@ -295,6 +302,49 @@ public class Main extends JFrame {
 		outputDataBox.setText(employeesArr.get(found).toString());
 		this.currentEmployeeDisplayed = found;
 	}
+	
+	/**
+	 * Searches for the next employee in the array.
+	 */
+	public void getNextEmployee() {
+		if (this.employeesArr.size() < 1) {
+			this.getAllEmployees();
+		}
+		
+		if (this.employeesArr.size() <= 0) {
+			outputDataBox.setText("No employees found from the database.");
+			return;
+		}
+		
+		if (
+				this.currentEmployeeDisplayed == -1 ||
+				this.currentEmployeeDisplayed + 1 >= this.employeesArr.size()) {
+			this.currentEmployeeDisplayed = 0;
+		} else {
+			this.currentEmployeeDisplayed += 1;
+		}
+		
+		outputDataBox.setText(this.employeesArr.get(this.currentEmployeeDisplayed).toString());
+	}
+	
+	public void getPreviousEmployee() {
+		if (this.employeesArr.size() < 1) {
+			this.getAllEmployees();
+		}
+		
+		if (this.employeesArr.size() <= 0) {
+			outputDataBox.setText("No employees found from the database.");
+			return;
+		}
+		
+		if (this.currentEmployeeDisplayed <= 0) {
+			this.currentEmployeeDisplayed = this.employeesArr.size() - 1;
+		} else {
+			this.currentEmployeeDisplayed -= 1;
+		}
+
+		outputDataBox.setText(this.employeesArr.get(this.currentEmployeeDisplayed).toString());
+	};
 	
 	/**
 	 * Retrieves all employees from the database and stores it into an array list.
