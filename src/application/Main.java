@@ -351,7 +351,6 @@ public class Main extends JFrame {
 			employeesArr = null;
 			
 			outputDataBox.setText("No employee with associated SSN or surname found.");
-			System.out.println(e);
 		}
 		
 		this.clearUpdateFormFields();
@@ -371,7 +370,6 @@ public class Main extends JFrame {
 			outputDataBox.setText(nextEmployee.toString());
 		} catch (Exception e) {
 			outputDataBox.setText("There is no more employees after the current one.");
-			System.out.println(e);
 		}
 
 		this.clearUpdateFormFields();
@@ -388,7 +386,6 @@ public class Main extends JFrame {
 			outputDataBox.setText(prevEmployee.toString());
 		} catch (Exception e) {
 			outputDataBox.setText("There is no more employees before the current one.");
-			System.out.println(e);
 		}
 		
 		this.clearUpdateFormFields();
@@ -419,7 +416,6 @@ public class Main extends JFrame {
 			this.employeesArr = null;
 			this.clearUpdateFormFields();
 		} catch (SQLException e) {
-			System.out.println(e);
 			return;
 		}
 	}
@@ -509,7 +505,6 @@ public class Main extends JFrame {
 			outputDataBox.setText("Employee with SSN " + socialSecurityNumber + " was updated.");
 		} catch (Exception e) {
 			outputDataBox.setText("An error occurred while attempting to update an employee.");
-			System.out.println(e);
 			return;
 		}
 	}
@@ -572,9 +567,7 @@ public class Main extends JFrame {
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (Exception e) {
-			outputDataBox.setText("An error occurred while attempting to add the employee.");
-			System.out.println(e);
-			
+			outputDataBox.setText("An error occurred while attempting to add the employee.");			
 			return;
 		}
 		
