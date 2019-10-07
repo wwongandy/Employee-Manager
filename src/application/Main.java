@@ -39,9 +39,9 @@ public class Main extends JFrame {
 	// SQL connection variable for handling queries and updates
 	private Connection thisConnection;
 	
-	private ArrayList<Employee> employeesArr = new ArrayList<Employee>();
-	private int currentEmployeeDisplayed = -1; // index to current employee being displayed, for usage in Next/Previous buttons
-	String[] GENDER_OPTIONS = {"Male", "Female", "Other"};
+	private ResultSet employeesArr = null;
+	private boolean isUpdatingEmployee = false;
+	private final String[] GENDER_OPTIONS = {"Male", "Female", "Other"};
 
 	// Swing GUI components
 	private JPanel contentPane;
@@ -221,6 +221,7 @@ public class Main extends JFrame {
 		JButton btnUpdate = new JButton("Update");
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				updateEmployee();
 			}
 		});
 		btnUpdate.setBounds(5, 271, 80, 21);
@@ -229,6 +230,7 @@ public class Main extends JFrame {
 		JButton btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				deleteEmployee();
 			}
 		});
 		btnDelete.setBounds(91, 271, 85, 21);
@@ -279,71 +281,88 @@ public class Main extends JFrame {
 	 * Instead of constantly querying from the SQL database, this will be more efficient and give less load on the database.
 	 */
 	public void searchEmployee() {
-		if (this.employeesArr.size() < 1) {
-			this.getAllEmployees();
-		}
 		
-		if (this.employeesArr.size() <= 0) {
-			outputDataBox.setText("No employees found from the database.");
+		String query = searchEmployeeText.getText();
+		if (query.equals("")) {
 			return;
 		}
 		
-		String surnameOrSSN = searchEmployeeText.getText();
-		int found = Employee.searchBySurnameOrSSN(
-				surnameOrSSN,
-				this.employeesArr
-		);
+		boolean searchingViaSSN = true;
+		int ssnQuery = -1;
+		try {
+			ssnQuery = Integer.parseInt(query);
+			
+			if (ssnQuery < 100000000) {
+				outputDataBox.setText("Social security number must be 9+ digit numbers only.");
+				return;
+			}
+		} catch (Exception e) {
+			searchingViaSSN = false;
+		}
 		
-		if (found == -1) {
+		try {
+			Statement stmt = this.thisConnection.createStatement();
+			
+			if (searchingViaSSN) {
+				stmt.executeQuery(
+						"SELECT * FROM `employees` " +
+						"WHERE (socialSecurityNumber = " + ssnQuery + ")"
+				);
+			} else {
+				stmt.executeQuery(
+						"SELECT * FROM `employees` " +
+						"WHERE (firstName = '" + query + "' OR surname = '" + query + "')"
+				);
+			}
+			
+			ResultSet employeesFound = stmt.getResultSet();
+			
+			this.employeesArr = employeesFound;
+			this.employeesArr.first();
+			
+			Employee employeeFound = this.getEmployee();
+			outputDataBox.setText(employeeFound.toString());
+			
+		} catch (Exception e) {
 			outputDataBox.setText("No employee with associated SSN or surname found.");
+			System.out.println(e);
 			return;
 		}
-		
-		outputDataBox.setText(employeesArr.get(found).toString());
-		this.currentEmployeeDisplayed = found;
 	}
 	
 	/**
 	 * Searches for the next employee in the array.
 	 */
 	public void getNextEmployee() {
-		if (this.employeesArr.size() < 1) {
-			this.getAllEmployees();
-		}
-		
-		if (this.employeesArr.size() <= 0) {
-			outputDataBox.setText("No employees found from the database.");
+		if (this.employeesArr == null) {
 			return;
 		}
 		
-		if (
-				this.currentEmployeeDisplayed == -1 ||
-				this.currentEmployeeDisplayed + 1 >= this.employeesArr.size()) {
-			this.currentEmployeeDisplayed = 0;
-		} else {
-			this.currentEmployeeDisplayed += 1;
+		try {
+			this.employeesArr.next();
+			Employee nextEmployee = this.getEmployee();
+			outputDataBox.setText(nextEmployee.toString());
+		} catch (Exception e) {
+			outputDataBox.setText("There is no more employees after the current one.");
+			System.out.println(e);
+			return;
 		}
-		
-		outputDataBox.setText(this.employeesArr.get(this.currentEmployeeDisplayed).toString());
 	}
 	
 	public void getPreviousEmployee() {
-		if (this.employeesArr.size() < 1) {
-			this.getAllEmployees();
-		}
-		
-		if (this.employeesArr.size() <= 0) {
-			outputDataBox.setText("No employees found from the database.");
+		if (this.employeesArr == null) {
 			return;
 		}
 		
-		if (this.currentEmployeeDisplayed <= 0) {
-			this.currentEmployeeDisplayed = this.employeesArr.size() - 1;
-		} else {
-			this.currentEmployeeDisplayed -= 1;
+		try {
+			this.employeesArr.previous();
+			Employee prevEmployee = this.getEmployee();
+			outputDataBox.setText(prevEmployee.toString());
+		} catch (Exception e) {
+			outputDataBox.setText("There is no more employees before the current one.");
+			System.out.println(e);
+			return;
 		}
-
-		outputDataBox.setText(this.employeesArr.get(this.currentEmployeeDisplayed).toString());
 	};
 	
 	/**
@@ -374,8 +393,6 @@ public class Main extends JFrame {
 				employeesArr.add(employee);
 			}
 			
-			this.employeesArr = employeesArr;
-			
 		} catch (Exception e) {
 			
 		}
@@ -385,7 +402,30 @@ public class Main extends JFrame {
 	 * Removes the selected employee in the GUI from the database.
 	 */
 	public void deleteEmployee() {
+		if (this.employeesArr == null) {
+			return;
+		}
 		
+		try {
+			Employee deletingEmployee = this.getEmployee();
+			int socialSecurityNumber = deletingEmployee.getSocialSecurityNumber();
+			
+			Statement stmt = this.thisConnection.createStatement();
+			
+			stmt.executeUpdate(
+					"DELETE FROM `employees` " +
+					"WHERE (socialSecurityNumber = " + socialSecurityNumber + ")"
+			);
+			
+			stmt.close();
+			outputDataBox.setText("The selected employee with ID " + socialSecurityNumber + " was deleted.");
+			
+			this.employeesArr = null;
+			
+		} catch (SQLException e) {
+			System.out.println(e);
+			return;
+		}
 	}
 	
 	/**
@@ -393,6 +433,23 @@ public class Main extends JFrame {
 	 */
 	public void updateEmployee() {
 		
+	}
+	
+	/**
+	 * Retrieves the current selected employee as an employee object.
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public Employee getEmployee() throws SQLException {
+		return new Employee(
+				this.employeesArr.getInt("socialSecurityNumber"),
+				this.employeesArr.getDate("dateOfBirth"),
+				this.employeesArr.getString("firstName"),
+				this.employeesArr.getString("surname"),
+				this.employeesArr.getFloat("salary"),
+				this.employeesArr.getString("gender")
+		);
 	}
 	
 	/**
@@ -427,7 +484,7 @@ public class Main extends JFrame {
 			);
 			
 			stmt.setInt(1, newEmployee.getSocialSecurityNumber());
-			stmt.setDate(2, (Date) newEmployee.getDateOfBirth());
+			stmt.setDate(2, new java.sql.Date(newEmployee.getDateOfBirth().getTime()));
 			stmt.setString(3, newEmployee.getFirstName());
 			stmt.setString(4, newEmployee.getSurname());
 			stmt.setFloat(5, newEmployee.getSalary());
@@ -437,6 +494,8 @@ public class Main extends JFrame {
 			stmt.close();
 		} catch (Exception e) {
 			outputDataBox.setText("An error occurred while attempting to add the employee.");
+			System.out.println(e);
+			
 			return;
 		}
 		
