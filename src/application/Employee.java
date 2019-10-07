@@ -118,6 +118,7 @@ public class Employee {
 		
 		this.socialSecurityNumber = socialSecurityNumber;
 	}
+	
 	/**
 	 * Unused.
 	 * 
@@ -125,6 +126,15 @@ public class Employee {
 	 */
 	public Date getDateOfBirth() {
 		return dateOfBirth;
+	}
+	
+	/**
+	 * Alternative getter for dateOfBirth, output is returned as its original input format of YYYY-MM-DD
+	 * 
+	 * @return
+	 */
+	public String getDateOfBirthFormatted() {
+		return dateFormatter.format(dateOfBirth);
 	}
 
 	/**

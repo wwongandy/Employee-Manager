@@ -2,13 +2,11 @@ package application;
 
 // JDBC and validation imports
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Properties;
 
 // Imports for AWT & Swing GUI
@@ -51,6 +49,7 @@ public class Main extends JFrame {
 	private JTextField surname;
 	private JTextField salary;
 	private JComboBox<String> gender;
+	private JButton btnAdd;
 	private JTextField searchEmployeeText;
 	private JEditorPane outputDataBox;
 
@@ -153,10 +152,15 @@ public class Main extends JFrame {
 		gender.setBounds(121, 125, 310, 21);
 		contentPane.add(gender);
 		
-		JButton btnAdd = new JButton("Add Employee");
+		btnAdd = new JButton("Add Employee");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				addEmployee();
+				
+				if (isUpdatingEmployee) {
+					updateEmployeeFin();
+				} else {
+					addEmployee();
+				}
 			}
 		});
 		btnAdd.setBounds(296, 151, 135, 21);
@@ -166,7 +170,11 @@ public class Main extends JFrame {
 		button.setBounds(296, 177, 135, 21);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				clearAddFormFields();
+				if (isUpdatingEmployee) {
+					clearUpdateFormFields();
+				} else {
+					clearAddFormFields();
+				}
 			}
 		});
 		contentPane.add(button);
@@ -276,6 +284,21 @@ public class Main extends JFrame {
 		salary.setText("");
 	}
 	
+	public void clearUpdateFormFields() {
+		if (!this.isUpdatingEmployee) {
+			return;
+		};
+		
+		socialSecurityNumber.setText("");
+		dateOfBirth.setText("");
+		firstName.setText("");
+		surname.setText("");
+		salary.setText("");
+		
+		this.isUpdatingEmployee = false;
+		btnAdd.setText("Add Employee");
+	};
+	
 	/**
 	 * Searches for an employee from the loaded array list of employees.
 	 * Instead of constantly querying from the SQL database, this will be more efficient and give less load on the database.
@@ -294,6 +317,7 @@ public class Main extends JFrame {
 			
 			if (ssnQuery < 100000000) {
 				outputDataBox.setText("Social security number must be 9+ digit numbers only.");
+				this.clearUpdateFormFields();
 				return;
 			}
 		} catch (Exception e) {
@@ -324,10 +348,13 @@ public class Main extends JFrame {
 			outputDataBox.setText(employeeFound.toString());
 			
 		} catch (Exception e) {
+			employeesArr = null;
+			
 			outputDataBox.setText("No employee with associated SSN or surname found.");
 			System.out.println(e);
-			return;
 		}
+		
+		this.clearUpdateFormFields();
 	}
 	
 	/**
@@ -345,8 +372,9 @@ public class Main extends JFrame {
 		} catch (Exception e) {
 			outputDataBox.setText("There is no more employees after the current one.");
 			System.out.println(e);
-			return;
 		}
+
+		this.clearUpdateFormFields();
 	}
 	
 	public void getPreviousEmployee() {
@@ -361,42 +389,10 @@ public class Main extends JFrame {
 		} catch (Exception e) {
 			outputDataBox.setText("There is no more employees before the current one.");
 			System.out.println(e);
-			return;
 		}
-	};
-	
-	/**
-	 * Retrieves all employees from the database and stores it into an array list.
-	 */
-	public void getAllEmployees() {
 		
-		try {
-			Statement stmt = this.thisConnection.createStatement();
-			stmt.executeQuery(
-					"SELECT * FROM `employees`"
-			);
-			
-			ResultSet currentEmployee = stmt.getResultSet();
-			ArrayList<Employee> employeesArr = new ArrayList<Employee>();
-			
-			// Converting to ArrayList for quick referencing later
-			while (currentEmployee.next()) {
-				Employee employee = new Employee(
-					currentEmployee.getInt("socialSecurityNumber"),
-					currentEmployee.getDate("dateOfBirth"),
-					currentEmployee.getString("firstName"),
-					currentEmployee.getString("surname"),
-					currentEmployee.getFloat("salary"),
-					currentEmployee.getString("gender")
-				);
-				
-				employeesArr.add(employee);
-			}
-			
-		} catch (Exception e) {
-			
-		}
-	}
+		this.clearUpdateFormFields();
+	};
 	
 	/**
 	 * Removes the selected employee in the GUI from the database.
@@ -421,7 +417,7 @@ public class Main extends JFrame {
 			outputDataBox.setText("The selected employee with ID " + socialSecurityNumber + " was deleted.");
 			
 			this.employeesArr = null;
-			
+			this.clearUpdateFormFields();
 		} catch (SQLException e) {
 			System.out.println(e);
 			return;
@@ -432,7 +428,90 @@ public class Main extends JFrame {
 	 * Updates the selected employee in the GUI and replaces his existing details with the new given details in the database.
 	 */
 	public void updateEmployee() {
+		if (this.employeesArr == null) {
+			return;
+		}
 		
+		try {
+			Employee updatingEmployee = this.getEmployee();
+			// If no error; employee for updating, exists
+			
+			socialSecurityNumber.setText(Integer.toString(updatingEmployee.getSocialSecurityNumber()));
+			dateOfBirth.setText(updatingEmployee.getDateOfBirthFormatted());
+			firstName.setText(updatingEmployee.getFirstName());
+			surname.setText(updatingEmployee.getSurname());
+			salary.setText(Float.toString(updatingEmployee.getSalary()));
+			gender.setSelectedItem(updatingEmployee.getGender());
+			
+			isUpdatingEmployee = true;
+			btnAdd.setText("Update Employee");
+		} catch (Exception e) {
+			return;
+		}
+	}
+	
+	/**
+	 * Updates the current selected employee with the new updated details.
+	 */
+	public void updateEmployeeFin() {
+		if (!isUpdatingEmployee || this.employeesArr == null) {
+			return;
+		}
+		
+		String _socialSecurityNumber = socialSecurityNumber.getText();
+		String _dateOfBirth = dateOfBirth.getText();
+		String _firstName = firstName.getText();
+		String _surname = surname.getText();
+		String _salary = salary.getText();
+		String _gender = GENDER_OPTIONS[gender.getSelectedIndex()];
+		
+		Employee updatedEmployee = new Employee(
+				_socialSecurityNumber,
+				_dateOfBirth,
+				_firstName,
+				_surname,
+				_salary,
+				_gender
+		);
+		
+		if (updatedEmployee.isInvalid()) {
+			outputDataBox.setText(updatedEmployee.getErrorMsg());
+			return;
+		}
+		
+		try {
+			Employee oldEmployee = this.getEmployee();
+			int socialSecurityNumber = updatedEmployee.getSocialSecurityNumber();
+			
+			if (oldEmployee.getSocialSecurityNumber() != socialSecurityNumber) {
+				outputDataBox.setText("Social security number cannot be changed.");
+				return;
+			}
+			
+			PreparedStatement stmt = this.thisConnection.prepareStatement(
+					"UPDATE `employees` " +
+					"SET dateOfBirth = ?, firstName = ?, surname = ?, salary = ?, gender = ? " +
+					"WHERE socialSecurityNumber = ?"
+			);
+			
+			stmt.setDate(1, new java.sql.Date(updatedEmployee.getDateOfBirth().getTime()));
+			stmt.setString(2, updatedEmployee.getFirstName());
+			stmt.setString(3, updatedEmployee.getSurname());
+			stmt.setFloat(4, updatedEmployee.getSalary());
+			stmt.setString(5, String.valueOf(updatedEmployee.getGender()));
+			stmt.setInt(6, socialSecurityNumber);
+			
+			stmt.executeUpdate();
+			stmt.close();
+			
+			this.employeesArr = null;
+			this.clearUpdateFormFields();
+			outputDataBox.setText("Employee with SSN " + socialSecurityNumber + " was updated.");
+		} catch (Exception e) {
+			outputDataBox.setText("An error occurred while attempting to update an employee.");
+			System.out.println(e);
+			return;
+		}
 	}
 	
 	/**
