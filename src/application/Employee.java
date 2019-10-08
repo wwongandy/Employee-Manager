@@ -5,7 +5,6 @@
 
 package application;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
@@ -90,17 +89,13 @@ public class Employee {
 	 */
 	public void setSocialSecurityNumber(String socialSecurityNumber) {
 		
-		if (socialSecurityNumber.length() < 9) {
+		if (!Employee.validateSSN(socialSecurityNumber)) {
 			this.errorMsg = "Social security number must be at-least 9 digits long";
 			return;
 		}
 		
-		try {
-			int newSSN = Integer.parseInt(socialSecurityNumber);
-			this.socialSecurityNumber = newSSN;
-		} catch (Exception e) {
-			this.errorMsg = "Letters should not exist within the social security number"; 
-		}
+		int newSSN = Integer.parseInt(socialSecurityNumber);
+		this.socialSecurityNumber = newSSN;
 	}
 	
 	/**
@@ -120,8 +115,6 @@ public class Employee {
 	}
 	
 	/**
-	 * Unused.
-	 * 
 	 * @return
 	 */
 	public Date getDateOfBirth() {
@@ -201,6 +194,7 @@ public class Employee {
 	/**
 	 * Default setter for surname.
 	 * Ensures the given surname is not an empty string.
+	 * 
 	 * @param surname
 	 */
 	public void setSurname(String surname) {
@@ -213,8 +207,6 @@ public class Employee {
 	}
 	
 	/**
-	 * Unused.
-	 * 
 	 * @return
 	 */
 	public float getSalary() {
@@ -264,8 +256,6 @@ public class Employee {
 	}
 	
 	/**
-	 * Unused.
-	 * 
 	 * @return
 	 */
 	public char getGender() {
@@ -323,33 +313,27 @@ public class Employee {
 				this.gender == 'N'
 		);
 	}
-
+	
 	/**
-	 * Searches the array list of employees for any matching;
-	 * 	- first name
-	 * 	- surname
-	 * 	- social security numbers
+	 * Performs standardised validation for social security number values of type "String".
+	 * Ensures that the social security number is a 9 digit or more integer.
 	 * 
-	 * and returns the index of the first one it finds.
-	 * 
-	 * @param surnameOrSSN
-	 * @param employees
+	 * @param socialSecurityNumber
 	 * @return
 	 */
-	public static int searchBySurnameOrSSN(String surnameOrSSN, ArrayList<Employee> employees) {
+	public static boolean validateSSN(String socialSecurityNumber) {
 		
-		int employeeCount = employees.size();
-		for (int i = 0; i < employeeCount; i += 1) {
-			Employee employee = employees.get(i);
-			
-			if (
-					employee.getFirstName().equals(surnameOrSSN) ||
-					employee.getSurname().equals(surnameOrSSN) ||
-					Integer.toString(employee.getSocialSecurityNumber()).equals(surnameOrSSN)) {
-				return i;
-			};
+		if (socialSecurityNumber.length() < 9) {
+			return false;
 		}
 		
-		return -1;
+		try {
+			// Will throw an error if invalid parse attempt
+			Integer.parseInt(socialSecurityNumber);
+			
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

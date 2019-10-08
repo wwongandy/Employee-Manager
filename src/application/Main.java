@@ -297,21 +297,12 @@ public class Main extends JFrame {
 	public void searchEmployee() {
 		
 		String query = searchEmployeeText.getText();
-		if (query.equals("")) {
-			return;
-		}
-		
 		boolean searchingViaSSN = true;
 		int ssnQuery = -1;
-		try {
+		
+		if (Employee.validateSSN(query)) {
 			ssnQuery = Integer.parseInt(query);
-			
-			if (ssnQuery < 100000000) {
-				outputDataBox.setText("Social security number must be 9+ digit numbers only.");
-				this.clearUpdateFormFields();
-				return;
-			}
-		} catch (Exception e) {
+		} else {
 			searchingViaSSN = false;
 		}
 		
