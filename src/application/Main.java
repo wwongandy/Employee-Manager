@@ -26,20 +26,13 @@ import javax.swing.JEditorPane;
 
 public class Main extends JFrame {
 	
-	// SQL DB connection configuration, localhost so it's not a security flaw! Totally.
+	// JDBC SQL database configuration settings
 	private final String SQL_USERNAME = "root";
 	private final String SQL_PASSWORD = "";
 	private final String SERVER_NAME = "localhost";
 	private final int PORT_NUMBER = 3306;
 	private final String DATABASE_NAME = "test";
 	private final String TABLE_NAME = "employees";
-	
-	// SQL connection variable for handling queries and updates
-	private Connection thisConnection;
-	
-	private ResultSet employeesArr = null;
-	private boolean isUpdatingEmployee = false;
-	private final String[] GENDER_OPTIONS = {"Male", "Female", "Other"};
 
 	// Swing GUI components
 	private JPanel contentPane;
@@ -49,9 +42,19 @@ public class Main extends JFrame {
 	private JTextField surname;
 	private JTextField salary;
 	private JComboBox<String> gender;
-	private JButton btnAdd;
+	private JButton btnAddEmployee;
 	private JTextField searchEmployeeText;
 	private JEditorPane outputDataBox;
+	
+	// Fixed strings for quick referencing
+	private final String BTN_ADD_EMPLOYEE = "Add Employee";
+	private final String BTN_UPDATE_EMPLOYEE = "Update Employee";
+	
+	// Other variables
+	private Connection thisConnection; // SQL connection variable for handling queries and updates
+	private ResultSet employeesArr = null; // Storing search history for quick traversal and update/delete selection
+	private boolean isUpdatingEmployee = false; // Flag to determine if update operation is in progress
+	private final String[] GENDER_OPTIONS = {"Male", "Female", "Other"};
 
 	/**
 	 * Launch the application.
@@ -90,9 +93,9 @@ public class Main extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblSsn = new JLabel("SSN");
-		lblSsn.setBounds(41, 5, 70, 13);
-		contentPane.add(lblSsn);
+		JLabel lblSSN = new JLabel("SSN");
+		lblSSN.setBounds(41, 5, 70, 13);
+		contentPane.add(lblSSN);
 		
 		socialSecurityNumber = new JTextField();
 		socialSecurityNumber.setBounds(121, 5, 310, 19);
@@ -100,9 +103,9 @@ public class Main extends JFrame {
 		contentPane.add(socialSecurityNumber);
 		socialSecurityNumber.setColumns(10);
 		
-		JLabel label = new JLabel("DoB");
-		label.setBounds(40, 29, 71, 13);
-		contentPane.add(label);
+		JLabel lblDoB = new JLabel("DoB");
+		lblDoB.setBounds(40, 29, 71, 13);
+		contentPane.add(lblDoB);
 		
 		dateOfBirth = new JTextField();
 		dateOfBirth.setBounds(121, 29, 310, 19);
@@ -110,9 +113,9 @@ public class Main extends JFrame {
 		dateOfBirth.setColumns(10);
 		contentPane.add(dateOfBirth);
 		
-		JLabel label_1 = new JLabel("First name");
-		label_1.setBounds(10, 53, 101, 13);
-		contentPane.add(label_1);
+		JLabel lblFirstName = new JLabel("First name");
+		lblFirstName.setBounds(10, 53, 101, 13);
+		contentPane.add(lblFirstName);
 		
 		firstName = new JTextField();
 		firstName.setBounds(121, 53, 310, 19);
@@ -120,9 +123,9 @@ public class Main extends JFrame {
 		firstName.setColumns(10);
 		contentPane.add(firstName);
 		
-		JLabel label_2 = new JLabel("Surname");
-		label_2.setBounds(18, 77, 93, 13);
-		contentPane.add(label_2);
+		JLabel lblSurname = new JLabel("Surname");
+		lblSurname.setBounds(18, 77, 93, 13);
+		contentPane.add(lblSurname);
 		
 		surname = new JTextField();
 		surname.setBounds(121, 77, 310, 19);
@@ -130,9 +133,9 @@ public class Main extends JFrame {
 		surname.setColumns(10);
 		contentPane.add(surname);
 		
-		JLabel label_3 = new JLabel("Salary");
-		label_3.setBounds(31, 101, 80, 13);
-		contentPane.add(label_3);
+		JLabel lblSalary = new JLabel("Salary");
+		lblSalary.setBounds(31, 101, 80, 13);
+		contentPane.add(lblSalary);
 		
 		salary = new JTextField();
 		salary.setBounds(121, 101, 310, 19);
@@ -140,16 +143,16 @@ public class Main extends JFrame {
 		salary.setColumns(10);
 		contentPane.add(salary);
 		
-		JLabel label_4 = new JLabel("Gender");
-		label_4.setBounds(25, 126, 86, 13);
-		contentPane.add(label_4);
+		JLabel lblGender = new JLabel("Gender");
+		lblGender.setBounds(25, 126, 86, 13);
+		contentPane.add(lblGender);
 		
 		gender = new JComboBox<String>(GENDER_OPTIONS);
 		gender.setBounds(121, 125, 310, 21);
 		contentPane.add(gender);
 		
-		btnAdd = new JButton("Add Employee");
-		btnAdd.addActionListener(new ActionListener() {
+		btnAddEmployee = new JButton(BTN_ADD_EMPLOYEE);
+		btnAddEmployee.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 				if (isUpdatingEmployee) {
@@ -159,13 +162,15 @@ public class Main extends JFrame {
 				}
 			}
 		});
-		btnAdd.setBounds(296, 151, 135, 21);
-		contentPane.add(btnAdd);
+		btnAddEmployee.setBounds(296, 151, 135, 21);
+		contentPane.add(btnAddEmployee);
 		
-		JButton button = new JButton("Clear Fields");
-		button.setBounds(296, 177, 135, 21);
-		button.addActionListener(new ActionListener() {
+		JButton btnClearFields = new JButton("Clear Fields");
+		btnClearFields.setBounds(296, 177, 135, 21);
+		btnClearFields.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				// Button also used for cancelling update operation
 				if (isUpdatingEmployee) {
 					clearUpdateFormFields();
 				} else {
@@ -173,15 +178,11 @@ public class Main extends JFrame {
 				}
 			}
 		});
-		contentPane.add(button);
+		contentPane.add(btnClearFields);
 		
-		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
-		horizontalStrut_1.setBounds(0, 0, 0, 0);
-		contentPane.add(horizontalStrut_1);
-		
-		Component horizontalStrut = Box.createHorizontalStrut(20);
-		horizontalStrut.setBounds(0, 0, 0, 0);
-		contentPane.add(horizontalStrut);
+		Component divider = Box.createHorizontalStrut(40);
+		divider.setBounds(0, 0, 0, 0);
+		contentPane.add(divider);
 		
 		JButton btnSearchEmployee = new JButton("Search Employee");
 		btnSearchEmployee.addActionListener(new ActionListener() {
@@ -204,41 +205,41 @@ public class Main extends JFrame {
 		outputDataBox.setEditable(false);
 		contentPane.add(outputDataBox);
 		
-		JButton button_1 = new JButton("Next");
-		button_1.addActionListener(new ActionListener() {
+		JButton btnNextEmployee = new JButton("Next");
+		btnNextEmployee.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				getNextEmployee();
 			}
 		});
-		button_1.setBounds(5, 240, 80, 21);
-		contentPane.add(button_1);
+		btnNextEmployee.setBounds(5, 240, 80, 21);
+		contentPane.add(btnNextEmployee);
 		
-		JButton button_2 = new JButton("Previous");
-		button_2.addActionListener(new ActionListener() {
+		JButton btnPrevEmployee = new JButton("Previous");
+		btnPrevEmployee.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				getPreviousEmployee();
 			}
 		});
-		button_2.setBounds(91, 240, 85, 21);
-		contentPane.add(button_2);
+		btnPrevEmployee.setBounds(91, 240, 85, 21);
+		contentPane.add(btnPrevEmployee);
 		
-		JButton btnUpdate = new JButton("Update");
-		btnUpdate.addActionListener(new ActionListener() {
+		JButton btnUpdateEmployee = new JButton("Update");
+		btnUpdateEmployee.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				updateEmployee();
 			}
 		});
-		btnUpdate.setBounds(5, 271, 80, 21);
-		contentPane.add(btnUpdate);
+		btnUpdateEmployee.setBounds(5, 271, 80, 21);
+		contentPane.add(btnUpdateEmployee);
 		
-		JButton btnDelete = new JButton("Delete");
-		btnDelete.addActionListener(new ActionListener() {
+		JButton btnDeleteEmployee = new JButton("Delete");
+		btnDeleteEmployee.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				deleteEmployee();
 			}
 		});
-		btnDelete.setBounds(91, 271, 85, 21);
-		contentPane.add(btnDelete);
+		btnDeleteEmployee.setBounds(91, 271, 85, 21);
+		contentPane.add(btnDeleteEmployee);
 	}
 	
 	/**
@@ -288,7 +289,7 @@ public class Main extends JFrame {
 		salary.setText("");
 		
 		this.isUpdatingEmployee = false;
-		btnAdd.setText("Add Employee");
+		btnAddEmployee.setText(BTN_ADD_EMPLOYEE);
 	};
 	
 	/**
@@ -424,9 +425,9 @@ public class Main extends JFrame {
 			gender.setSelectedItem(updatingEmployee.getGender());
 			
 			isUpdatingEmployee = true;
-			btnAdd.setText("Update Employee");
+			btnAddEmployee.setText(BTN_UPDATE_EMPLOYEE);
 		} catch (Exception e) {
-			return;
+			
 		}
 	}
 	
