@@ -74,11 +74,7 @@ public class Main extends JFrame {
 	 */
 	public Main() {
 		this.makeGUI();
-		
-		try {
-			this.thisConnection = this.connectToSQL();
-		} catch (Exception e) {
-		}
+		this.connectToSQL();
 	}
 	
 	/**
@@ -247,13 +243,9 @@ public class Main extends JFrame {
 	
 	/**
 	 * Makes a connection to the local SQL database using JDBC.
-	 * 
-	 * @return
-	 * @throws SQLException
 	 */
-	public Connection connectToSQL() throws SQLException {
+	public void connectToSQL() {
 		
-		Connection conn = null;
 		Properties connectionProps = new Properties();
 		
 		// Login credentials for SQL localhost database
@@ -262,14 +254,11 @@ public class Main extends JFrame {
 		
 		try {
 			// Connecting to the SQL database
-			conn = DriverManager.getConnection(
+			this.thisConnection = DriverManager.getConnection(
 					"jdbc:mysql://" + this.SERVER_NAME + ":" + this.PORT_NUMBER + "/" + this.DATABASE_NAME + "?serverTimezone=UTC",
 					connectionProps
 			);
-			
-			return conn;
 		} catch (Exception e) {
-			return null;
 		}
 	}
 	
@@ -284,6 +273,9 @@ public class Main extends JFrame {
 		salary.setText("");
 	}
 	
+	/**
+	 * Empties all text fields from the GUI if update operation is in process.
+	 */
 	public void clearUpdateFormFields() {
 		if (!this.isUpdatingEmployee) {
 			return;
@@ -300,8 +292,7 @@ public class Main extends JFrame {
 	};
 	
 	/**
-	 * Searches for an employee from the loaded array list of employees.
-	 * Instead of constantly querying from the SQL database, this will be more efficient and give less load on the database.
+	 * Searches for an employee via a query into the SQL database. Performs pre-validation to determine the search parameter (SSN or first name/surname).
 	 */
 	public void searchEmployee() {
 		
@@ -327,6 +318,7 @@ public class Main extends JFrame {
 		try {
 			Statement stmt = this.thisConnection.createStatement();
 			
+			// Building command based on query parameter
 			if (searchingViaSSN) {
 				stmt.executeQuery(
 						"SELECT * FROM `employees` " +
@@ -340,16 +332,14 @@ public class Main extends JFrame {
 			}
 			
 			ResultSet employeesFound = stmt.getResultSet();
-			
 			this.employeesArr = employeesFound;
-			this.employeesArr.first();
 			
+			// Display the first listed employee
+			this.employeesArr.first();
 			Employee employeeFound = this.getEmployee();
 			outputDataBox.setText(employeeFound.toString());
-			
 		} catch (Exception e) {
 			employeesArr = null;
-			
 			outputDataBox.setText("No employee with associated SSN or surname found.");
 		}
 		
@@ -357,7 +347,7 @@ public class Main extends JFrame {
 	}
 	
 	/**
-	 * Searches for the next employee in the array.
+	 * Searches for the next employee in the result set.
 	 */
 	public void getNextEmployee() {
 		if (this.employeesArr == null) {
@@ -375,6 +365,9 @@ public class Main extends JFrame {
 		this.clearUpdateFormFields();
 	}
 	
+	/**
+	 * Searches for the previous employee in the result set.
+	 */
 	public void getPreviousEmployee() {
 		if (this.employeesArr == null) {
 			return;
@@ -454,6 +447,7 @@ public class Main extends JFrame {
 			return;
 		}
 		
+		// Ensuring new employee details passes validation tests
 		String _socialSecurityNumber = socialSecurityNumber.getText();
 		String _dateOfBirth = dateOfBirth.getText();
 		String _firstName = firstName.getText();
@@ -477,10 +471,12 @@ public class Main extends JFrame {
 		
 		try {
 			Employee oldEmployee = this.getEmployee();
-			int socialSecurityNumber = updatedEmployee.getSocialSecurityNumber();
+			int __socialSecurityNumber = updatedEmployee.getSocialSecurityNumber();
 			
-			if (oldEmployee.getSocialSecurityNumber() != socialSecurityNumber) {
+			// Primary key is SSN, therefore not mutable!
+			if (oldEmployee.getSocialSecurityNumber() != __socialSecurityNumber) {
 				outputDataBox.setText("Social security number cannot be changed.");
+				socialSecurityNumber.setText(Integer.toString(oldEmployee.getSocialSecurityNumber()));
 				return;
 			}
 			
@@ -495,14 +491,14 @@ public class Main extends JFrame {
 			stmt.setString(3, updatedEmployee.getSurname());
 			stmt.setFloat(4, updatedEmployee.getSalary());
 			stmt.setString(5, String.valueOf(updatedEmployee.getGender()));
-			stmt.setInt(6, socialSecurityNumber);
+			stmt.setInt(6, __socialSecurityNumber);
 			
 			stmt.executeUpdate();
 			stmt.close();
 			
 			this.employeesArr = null;
 			this.clearUpdateFormFields();
-			outputDataBox.setText("Employee with SSN " + socialSecurityNumber + " was updated.");
+			outputDataBox.setText("Employee with SSN " + __socialSecurityNumber + " was updated.");
 		} catch (Exception e) {
 			outputDataBox.setText("An error occurred while attempting to update an employee.");
 			return;
