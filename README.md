@@ -10,4 +10,5 @@ This is a Java Swing application for managing employees via the usage of a SQL d
 * Clone the project, and import it to your preferred IDE.
 * By default, the `mysql-connector-java.jar` file should be configured into the build path of the project, but otherwise; this but be added as a referenced library.
 * Setup a local MySQL localhost server using the `employees.sql` script file, and run this.
+* Ensure that your SQL database credentials are configured correctly onto the global SQL variables in `src/Main.java`.
 * Now the Java program should run without any issues.
