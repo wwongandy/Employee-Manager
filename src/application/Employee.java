@@ -294,7 +294,12 @@ public class Employee {
 	 * @return
 	 */
 	public String toString() {
-		return ("SSN: " + this.socialSecurityNumber + ", DoB: " + this.dateOfBirth + ", name: " + this.firstName + " " + this.surname + " (" + this.gender + "), salary: " + this.salary);
+		return (
+				"SSN: " + this.socialSecurityNumber + "\n" +
+				"DoB: " + this.dateOfBirth + "\n" +
+				"Name: " + this.firstName + " " + this.surname + " (" + this.gender + ")\n" +
+				"Salary: " + this.salary
+		);
 	}
 	
 	/**
